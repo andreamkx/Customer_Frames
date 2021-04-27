@@ -1,0 +1,2 @@
+Shirt1: Description of shirt1,Premium Price: $45,Regular Price: $20
+Shirt2: Description of shirt2,Premium Price: $40,Regular Price: $31
