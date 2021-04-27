@@ -1,5 +1,5 @@
 package CatalogWindow;
-
+// TEST COMMENT
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
