@@ -124,6 +124,7 @@ public class LoginScreen extends JFrame {
 							LoginScreen.username = username; // ** Store username for place order use case
 							Catalog.main(null);
 							dispose();
+							break;
 							/*
 							JFrame loggedIn = new JFrame("Logged In Screen");
 							if (JOptionPane.showConfirmDialog(loggedIn, "You have Logged out, would you like to log in again?", "Login Systems", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_NO_OPTION) {
