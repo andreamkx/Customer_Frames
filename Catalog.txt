@@ -1,2 +1,2 @@
-Shirt1: Description of shirt1,20,45
+Shirt1: Description of shirt1 elongating to test readability in catalog elongating,20,45
 Shirt2: Description of shirt2,31,40

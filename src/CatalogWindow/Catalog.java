@@ -14,7 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-class ItemQuantity {
+// Associates specific 'Add to Cart' actions with each item
+class CartItem {
     public String itemNameAndDescription;
     public String itemPrice;
     public double quantity;
@@ -22,7 +23,7 @@ class ItemQuantity {
     JTextField quantityInputField;
     JButton addToCart;
 
-    ItemQuantity(JTextField field, String nameAndDesc, String price, JButton button) {
+    CartItem(JTextField field, String nameAndDesc, String price, JButton button) {
         itemNameAndDescription = nameAndDesc;
         itemPrice = price;
         quantityInputField = field;
@@ -38,6 +39,7 @@ class ItemQuantity {
     }
 }
 
+// Displays customer's cart
 class CartFrame extends JFrame {
     private static double subtotal;
     private JPanel cartPanel;
@@ -45,34 +47,17 @@ class CartFrame extends JFrame {
     int xCoord = 10;
     int yCoord = 0;
 
-    CartFrame(List<ItemQuantity> array) {
+    // calculate subtotal and display order information. Provide place order button
+    CartFrame(List<CartItem> array) {
         subtotal = 0; // new subtotal calculated each time cart is opened
-        cartPanel = new JPanel();
-
-        // Set frame attributes
-        setContentPane(cartPanel);
+        setTitle("Shopping Cart");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setBounds(0,0,450,450);
+        cartPanel = new JPanel();
+        setContentPane(cartPanel);
+        cartPanel.setLayout(null);
 
         placeOrderButton = new JButton("Place Order");
-        placeOrderButton.setBounds(xCoord, yCoord, 80, 25);
-        cartPanel.add(placeOrderButton);
-
-        // for each item in the array, display in the cart and add prices to subtotal
-        for (ItemQuantity item: array){
-            if (item.quantity > 0){
-                subtotal += item.quantity * Double.parseDouble(item.itemPrice);
-                JLabel cartItemLabel = new JLabel(item.itemNameAndDescription + " $" + item.itemPrice);
-                cartItemLabel.setBounds(xCoord,yCoord+30,400, 25);
-                cartPanel.add(cartItemLabel);
-                yCoord+=30;
-            }
-        }
-
-        JLabel subtotalLabel = new JLabel("Subtotal: $" + String.valueOf(subtotal));
-        subtotalLabel.setBounds(xCoord+100, 0,100,25);
-        cartPanel.add(subtotalLabel);
-
-
         placeOrderButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e){
@@ -80,9 +65,27 @@ class CartFrame extends JFrame {
 
             }
         });
+        placeOrderButton.setBounds(xCoord, yCoord, 125, 25);
+        cartPanel.add(placeOrderButton);
+
+        // for each item in the array, display in the cart and add prices to subtotal
+        for (CartItem item: array){
+            if (item.quantity > 0){
+                subtotal += item.quantity * Double.parseDouble(item.itemPrice);
+                JLabel cartItemLabel = new JLabel("$" + item.itemPrice + " x" + String.format("%,.0f", item.quantity) + ": " + item.itemNameAndDescription);
+                cartItemLabel.setBounds(xCoord,yCoord+30,400, 25);
+                cartPanel.add(cartItemLabel);
+                yCoord+=30;
+            }
+        }
+
+        JLabel subtotalLabel = new JLabel("Subtotal: $" + String.valueOf(subtotal));
+        subtotalLabel.setBounds(xCoord+150, 0,100,25);
+        cartPanel.add(subtotalLabel);
     }
 }
 
+// Displays catalog to customer
 public class Catalog extends JFrame {
     // Define everything seen on the form
     private JPanel rootJPanel; // The starting JPanel
@@ -91,14 +94,14 @@ public class Catalog extends JFrame {
     private JButton viewInvoiceJButton; // Sachita
     private JButton logOutJButton;
 
-    // component coordinates
+    // ReadFile() component coordinates
     int xCoord = 10;
-    int yCoord = 50;
+    int yCoord = 30;
 
     // Items chosen from catalog to populate cart
-    public List<ItemQuantity> cartItemsArr;
+    public List<CartItem> cartItemsArr;
 
-    // Read the file and put the information into sArray, to be displayed on the screen
+    // Read the file and display information on the screen
     public void ReadFile() {
         cartItemsArr = new ArrayList<>();
 
@@ -111,26 +114,26 @@ public class Catalog extends JFrame {
                 String[] sArray = s.split(",", 3);
 
                 JLabel itemJLabel = new JLabel(sArray[0]);
-                itemJLabel.setBounds(xCoord, yCoord, 300,25);
+                itemJLabel.setBounds(xCoord, yCoord, 375,25);
                 rootJPanel.add(itemJLabel);
 
-                JLabel regularPriceJLabel = new JLabel("Regular Price: $" + sArray[1]);
-                regularPriceJLabel.setBounds(xCoord, yCoord+30, 50, 25);
-                rootJPanel.add(regularPriceJLabel);
-
-                JLabel premiumPriceJLabel = new JLabel("Premium Price: $" + sArray[2]);
-                premiumPriceJLabel.setBounds(xCoord, yCoord+60, 50, 25);
+                JLabel premiumPriceJLabel = new JLabel("Premium Price: $" + sArray[1]);
+                premiumPriceJLabel.setBounds(xCoord, yCoord+30, 300, 10);
                 rootJPanel.add(premiumPriceJLabel);
 
+                JLabel regularPriceJLabel = new JLabel("Regular Price:    $" + sArray[2]);
+                regularPriceJLabel.setBounds(xCoord, yCoord+45, 300, 10);
+                rootJPanel.add(regularPriceJLabel);
+
                 JTextField quantityUserInput = new JTextField("0");
-                quantityUserInput.setBounds(xCoord+310, yCoord, 25,25);
+                quantityUserInput.setBounds(xCoord+400, yCoord, 25,25);
                 rootJPanel.add(quantityUserInput);
 
                 JButton addToCartButton = new JButton("Add to Cart");
-                addToCartButton.setBounds(xCoord+340, yCoord, 120,25);
+                addToCartButton.setBounds(xCoord+430, yCoord, 100,25);
                 rootJPanel.add(addToCartButton);
 
-                yCoord+=70;
+                yCoord+=75;
 
                 Scanner input = new Scanner(new File("DataStuff/LoginData.txt"));
                 System.out.println("Test");
@@ -157,7 +160,7 @@ public class Catalog extends JFrame {
                 }
 
                 // Store text field value, item information, price, and button to assign specific actions to it
-                ItemQuantity item = new ItemQuantity(quantityUserInput, sArray[0], userPrice, addToCartButton);
+                CartItem item = new CartItem(quantityUserInput, sArray[0], userPrice, addToCartButton);
 
                 // Add item to array to populate cart items in CartFrame
                 cartItemsArr.add(item);
@@ -172,27 +175,52 @@ public class Catalog extends JFrame {
     } // End ReadFile()
 
     public Catalog() {
+        // set Frame attributes
         setTitle("Catalog");
         setDefaultCloseOperation((JFrame.EXIT_ON_CLOSE));
-        setBounds(0,0,500,500);
+        setBounds(0,0,600,600);
         rootJPanel = new JPanel();
         rootJPanel.setBorder(new EmptyBorder(5,5,5,5));
         setContentPane(rootJPanel);
         rootJPanel.setLayout(null);
 
-        // populate window with catalog items
-        ReadFile();
-
         // Cart button opens the cart window
+        cartJButton = new JButton("Cart");
         cartJButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 CartFrame cartFrame = new CartFrame(cartItemsArr);
                 cartFrame.setSize(400,400);
+                cartFrame.setVisible(true);
             }
         });
+        cartJButton.setBounds(xCoord, 0, 100, 25);
+        rootJPanel.add(cartJButton);
+
+        // View Order displays customer order
+        viewOrderJButton = new JButton("View Order");
+        viewOrderJButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("View Order pressed");
+            }
+        });
+        viewOrderJButton.setBounds(xCoord+115, 0, 100, 25);
+        rootJPanel.add(viewOrderJButton);
+
+        // view Invoice displays customer Invoice
+        viewInvoiceJButton = new JButton("View Invoice");
+        viewInvoiceJButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("View Invoice pressed");
+            }
+        });
+        viewInvoiceJButton.setBounds(xCoord+230, 0, 125, 25);
+        rootJPanel.add(viewInvoiceJButton);
 
         // Logs user out of OSS
+        logOutJButton = new JButton("Log Out");
         logOutJButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -205,15 +233,15 @@ public class Catalog extends JFrame {
                 }
             }
         });
+        logOutJButton.setBounds(xCoord+345,0,100,25);
+
+        // populate window with catalog items
+        ReadFile();
     }
 
     // Displays the Catalog window
     public static void main(String[] args) {
-        JFrame frame = new JFrame("Catalog");
+        Catalog frame = new Catalog();
         frame.setVisible(true);
     }
 }
-
-
-
-
