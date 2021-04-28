@@ -2,13 +2,17 @@ package CatalogWindow;
 
 import java.awt.event.*;
 import java.awt.Window;
-
 import javax.swing.*;
-
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
+
 
 public class Catalog extends JFrame {
     // Define everything seen on the form
@@ -17,62 +21,72 @@ public class Catalog extends JFrame {
     private JButton viewOrderJButton; // Sachita
     private JButton viewInvoiceJButton; // Sachita
     private JButton logOutJButton; // Will
-//     private JCheckBox itemNameJCheckBox; // Allows user to select item
-//    private JLabel itemNameAndDescriptionJLabel; // Read in from file
-//    private JLabel regularPriceJLabel; // Read in from file
-//    private JLabel premiumPriceJLabel; // Read in from file
-//    private JLabel quantityPrompt; // Displays the quantity prompt
-//    private JTextField quantityUserInput; // Allows the user to input their desired quantity
-//    private JLabel regularPricePrompt;
-//    private JLabel premiumPricePrompt;
 
-    // Displays the window
-    public static void main(String[] args) {
+    public List<ItemQuantity> cartItemsArr;
 
-        JFrame frame = new JFrame("Catalog");
-        frame.setContentPane(new Catalog().rootJPanel);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setVisible(true);
-        // frame.ReadFile();
-
-    }
+    //private ItemQuantity[] cartItemsArr;
 
     // Will read the file and put the information into sArray, to be displayed on the screen
     public void ReadFile() {
+        cartItemsArr = new ArrayList<>();
+
         try {
             Scanner in = new Scanner(new File("Catalog.txt"));
+
+            // Read from file and populate frame with items from the catalog
             while (in.hasNextLine()) {
                 String s = in.nextLine();
                 String[] sArray = s.split(",", 3);
 
-                JLabel itemNameAndDescriptionJLabel = new JLabel();
+                JLabel itemJLabel = new JLabel();
+                itemJLabel.setText(sArray[0]);
+
                 JLabel regularPriceJLabel = new JLabel();
+                regularPriceJLabel.setText("Regular Price: $" + sArray[1]);
+
                 JLabel premiumPriceJLabel = new JLabel();
+                premiumPriceJLabel.setText("Premium Price: $" + sArray[2]);
+
                 JTextField quantityUserInput = new JTextField();
-                //itemNameJCheckBox.setText(sArray[0]);
-                itemNameAndDescriptionJLabel.setText(sArray[0]);
-                regularPriceJLabel.setText(sArray[1]);
-                premiumPriceJLabel.setText(sArray[2]);
                 quantityUserInput.setText("0");
 
-                rootJPanel.add(itemNameAndDescriptionJLabel);
+                JButton addToCartButton = new JButton("Add to Cart");
+
+                Scanner input = new Scanner(new File("DataStuff/LoginData.txt"));
+                System.out.println("Test");
+                String userInfo = null;
+                String userPrice = null;
+
+                rootJPanel.add(itemJLabel);
                 rootJPanel.add(regularPriceJLabel);
                 rootJPanel.add(premiumPriceJLabel);
                 rootJPanel.add(quantityUserInput);
-                Double quantity = Double.parseDouble(quantityUserInput.getText());
+                rootJPanel.add(addToCartButton);
 
-                //object
-                if (quantity != null && quantity != 0) {
-                    // create object of item info
-                        // inside the object, we need it to populate in the cart window,
-                    System.out.println("this item: " + quantity);
-
+                // Assign specific actions to addToCartButton depending on quantityUserInput
+                    // find user premium status to use appropriate price
+                while( input.hasNextLine() ){ // find user in file
+                    userInfo = input.nextLine();
+                    if (userInfo.contains(LoginScreen.username)){
+                        break;
+                    }
+                }
+                while( input.hasNextLine() ){ // find user premium status
+                    userInfo = input.nextLine();
+                    if (userInfo.contains("Premium")) break;
                 }
 
+                if (userInfo.contains("true")) { // if premium, take premium price
+                    userPrice = sArray[1];
+                } else { // else, take regular price
+                    userPrice = sArray[2];
+                }
 
+                // Store text field value, item information, price, and button to assign specific actions to it
+                ItemQuantity item = new ItemQuantity(quantityUserInput, sArray[0], userPrice, addToCartButton);
 
-
+                // Add item to array for cart items
+                cartItemsArr.add(item);
             }
             in.close();
 
@@ -81,41 +95,21 @@ public class Catalog extends JFrame {
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null, "File cannot be read.", "Error", JOptionPane.ERROR_MESSAGE);
         }
-
-        //Double quantity = Double.parseDouble(quantityUserInput.getText());
-
-    }
+    } // End ReadFile()
 
     public Catalog() {
         ReadFile();
-        // Allow the cart button to open the internal cart window.
+
+        // Cart button opens the cart window
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         cartJButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // New frame: Cart
-                JInternalFrame cartInternalFrame = new JInternalFrame("Cart");
-
-                // Define the exit button
-                JButton exitButton = new JButton("Exit");
-
-                JPanel p1 = new JPanel();
-
-                // Add necessary items to the screen
-                p1.add(exitButton);
-//                p1.add(itemNameAndDescriptionJLabel);
-//                p1.add(regularPricePrompt);
-//                p1.add(regularPriceJLabel);
-//                p1.add(premiumPricePrompt);
-//                p1.add(premiumPriceJLabel);
-//                p1.add(quantityPrompt);
-//                p1.add(quantityUserInput);
-                cartInternalFrame.add(p1);
-
-                cartInternalFrame.setVisible(true);
-                rootJPanel.add(cartInternalFrame);
+                CartFrame cartFrame = new CartFrame(cartItemsArr);
+                setSize(400,400);
             }
         });
+
         logOutJButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -129,5 +123,79 @@ public class Catalog extends JFrame {
             }
         });
     }
+
+    // Displays the Catalog window
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("Catalog");
+        frame.setContentPane(new Catalog().rootJPanel);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.pack();
+        frame.setVisible(true);
+    }
 }
+
+class ItemQuantity {
+    public String itemNameAndDescription;
+    public String itemPrice;
+    public double quantity;
+
+    JTextField quantityInputField;
+    JButton addToCart;
+
+    ItemQuantity(JTextField field, String nameAndDesc, String price, JButton button) {
+        itemNameAndDescription = nameAndDesc;
+        itemPrice = price;
+        quantityInputField = field;
+        addToCart = button;
+
+        addToCart.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e){
+                quantity = Double.parseDouble(quantityInputField.getText()); // get value when button pressed
+
+            }
+        });
+    }
+}
+
+class CartFrame extends JFrame {
+    private static double subtotal;
+    private JPanel cartPanel;
+    private JButton placeOrderButton;
+
+    CartFrame(List<ItemQuantity> array) {
+        subtotal = 0; // new subtotal calculated each time cart is opened
+        cartPanel = new JPanel();
+
+        // Set frame attributes
+        setContentPane(cartPanel);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        pack();
+        setVisible(true);
+
+        // for each item in the array, display in the cart and add prices to subtotal
+        for (ItemQuantity item: array){
+            if (item.quantity > 0){
+                subtotal += item.quantity * Double.parseDouble(item.itemPrice);
+                JLabel cartItemLabel = new JLabel(item.itemNameAndDescription + " $" + item.itemPrice);
+                cartPanel.add(cartItemLabel);
+            }
+        }
+        JLabel subtotalLabel = new JLabel(String.valueOf(subtotal));
+        cartPanel.add(subtotalLabel);
+
+        placeOrderButton = new JButton("Place Order");
+        cartPanel.add(placeOrderButton);
+
+        placeOrderButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e){
+                // place order
+
+            }
+        });
+    }
+}
+
+
 

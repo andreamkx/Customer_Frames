@@ -25,10 +25,12 @@ import javax.swing.JButton;
 @SuppressWarnings("serial")
 public class LoginScreen extends JFrame {
 
+	public static String username; // Added to access user information during order placement
 	private JPanel contentPane;
 	private JTextField usernameTF;
 	private JPasswordField passwordPF;
 	public static int line;
+
 
 	/**
 	 * Launch the application.
@@ -119,6 +121,7 @@ public class LoginScreen extends JFrame {
 						System.out.println(password);
 						if(usernamein.equals(username) && passwordin.equals(password)){
 							JOptionPane.showMessageDialog(null, "Login Successful", "Success", JOptionPane.INFORMATION_MESSAGE);
+							LoginScreen.username = username; // ** Store username for place order use case
 							Catalog.main(null);
 							dispose();
 							/*
