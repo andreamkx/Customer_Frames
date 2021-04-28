@@ -106,7 +106,7 @@ public class Catalog extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 CartFrame cartFrame = new CartFrame(cartItemsArr);
-                setSize(400,400);
+                cartFrame.setSize(400,400);
             }
         });
 
