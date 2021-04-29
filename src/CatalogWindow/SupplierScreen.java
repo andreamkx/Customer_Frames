@@ -1,5 +1,7 @@
 package CatalogWindow;
 
+import SupplierWindow.SupplierW;
+
 import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -104,13 +106,17 @@ public class SupplierScreen extends JFrame {
 						if(usernamein.equals(username) && passwordin.equals(password)){
 							JOptionPane.showMessageDialog(null, "Login Successful", "Success", JOptionPane.INFORMATION_MESSAGE);
 							JFrame loggedIn = new JFrame("Logged In Screen");
-							if (JOptionPane.showConfirmDialog(loggedIn, "You have Logged out, would you like to log in again?", "Login Systems", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_NO_OPTION) {
-								usernameTF.setText("");
-								passwordPF.setText("");
-							}
-							else {
-								System.exit(0);
-							}
+//							if (JOptionPane.showConfirmDialog(loggedIn, "You have Logged out, would you like to log in again?", "Login Systems", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_NO_OPTION) {
+//								usernameTF.setText("");
+//								passwordPF.setText("");
+//							}
+//							else {
+//								System.exit(0);
+//							}
+							SupplierW.main(null);
+//							SupplierW frame = new SupplierW();
+//							frame.setSize(500,450);
+//							frame.setVisible(true);
 							break;
 						}
 						else{

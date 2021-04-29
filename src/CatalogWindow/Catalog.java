@@ -96,7 +96,7 @@ public class Catalog extends JFrame {
 
     // ReadFile() component coordinates
     int xCoord = 10;
-    int yCoord = 30;
+    int yCoord = 50;
 
     // Items chosen from catalog to populate cart
     public List<CartItem> cartItemsArr;
@@ -233,7 +233,8 @@ public class Catalog extends JFrame {
                 }
             }
         });
-        logOutJButton.setBounds(xCoord+345,0,100,25);
+        logOutJButton.setBounds(xCoord+430,0,100,25);
+        rootJPanel.add(logOutJButton);
 
         // populate window with catalog items
         ReadFile();

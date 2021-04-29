@@ -1,5 +1,7 @@
 package SupplierWindow;
 
+import CatalogWindow.LoginScreen;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.event.ActionEvent;
@@ -15,6 +17,8 @@ public class SupplierW extends JFrame {
     private JButton viewStockButton;
     private JButton requestOrdersButton;
     private JButton requestReadyOrdersButton;
+    private JButton logOutButton;
+
 
     // Frame constructor
     public SupplierW() {
@@ -27,22 +31,8 @@ public class SupplierW extends JFrame {
         setContentPane(mainPanel);
         mainPanel.setLayout(null);
 
-        // Initialize components
-        viewStockButton = new JButton("View Stock");
-        viewStockButton.setBounds(10,0,100,25);
-
-        requestOrdersButton = new JButton("Request Orders");
-        requestOrdersButton.setBounds(130,0,150,25); // right +120
-
-        requestReadyOrdersButton = new JButton("Request Ready Orders");
-        requestReadyOrdersButton.setBounds(300,0,170,25); // right 60+85
-
-        // Add components to panel
-        mainPanel.add(viewStockButton);
-        mainPanel.add(requestOrdersButton);
-        mainPanel.add(requestReadyOrdersButton);
-
         // Displays dialog window with stock item details
+        viewStockButton = new JButton("View Stock");
         viewStockButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -71,19 +61,24 @@ public class SupplierW extends JFrame {
                 JOptionPane.showMessageDialog(rootPane, "Total Items: " + total + "\nReserved Items: " + reserved + "\nAvailable Items: " + avail);
             }
         });
+        viewStockButton.setBounds(10,0,100,25);
+        mainPanel.add(viewStockButton);
 
         // Populates a new frame of out orders to be processed. Processing orders checks if supplier has enough stock.
+        requestOrdersButton = new JButton("Request Orders");
         requestOrdersButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 OrdersFrame ordersFrame = new OrdersFrame();
                 ordersFrame.setSize(450,400);
                 ordersFrame.setVisible(true);
-
             }
         });
+        requestOrdersButton.setBounds(130,0,150,25); // right +120
+        mainPanel.add(requestOrdersButton);
 
         // Populates a new frame with "ready" orders that must be shipped. Shipping orders subtracts them from stock.
+        requestReadyOrdersButton = new JButton("Request Ready Orders");
         requestReadyOrdersButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -92,11 +87,31 @@ public class SupplierW extends JFrame {
                 readyOrdersFrame.setVisible(true);
             }
         });
+        requestReadyOrdersButton.setBounds(300,0,170,25); // right 60+85
+        mainPanel.add(requestReadyOrdersButton);
+
+        // Logs supplier out of OSS
+        logOutButton = new JButton("Log Out");
+        logOutButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JFrame loggedIn = new JFrame("Logged In Screen");
+                if (JOptionPane.showConfirmDialog(loggedIn, "You have Logged out, would you like to log in again?", "Login Systems", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_NO_OPTION) {
+                    LoginScreen.main(null);
+                    //Catalog.dispatchEvent(new WindowEvent(Catalog, WindowEvent.WINDOW_CLOSING));
+                } else {
+                    System.exit(0);
+                }
+            }
+        });
+        logOutButton.setBounds(490,0,100,25);
+        mainPanel.add(logOutButton);
+
     } // end ossSupplier constructor
 
     public static void main(String[] args) {
         SupplierW supplierFrame = new SupplierW();
-        supplierFrame.setSize(500,450);
+        supplierFrame.setSize(615,450);
         supplierFrame.setVisible(true);
     }
 }
