@@ -111,6 +111,7 @@ public class SupplierScreen extends JFrame {
 							else {
 								System.exit(0);
 							}
+							break;
 						}
 						else{
 							JOptionPane.showMessageDialog(null, "Invalid Username / Password Combo", "Error", JOptionPane.ERROR_MESSAGE);
@@ -159,6 +160,7 @@ public class SupplierScreen extends JFrame {
 		backButton.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		backButton.setBounds(314, 330, 110, 20);
 		contentPane.add(backButton);
+
 		exitButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				JFrame frmLoginSystem = new JFrame("Exit");
