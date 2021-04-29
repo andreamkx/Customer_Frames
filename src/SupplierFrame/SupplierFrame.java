@@ -1,4 +1,4 @@
-package SupplierWindow;
+package SupplierFrame;
 
 import CatalogWindow.LoginScreen;
 
@@ -11,7 +11,7 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 // Main supplier frame
-public class SupplierW extends JFrame {
+public class SupplierFrame extends JFrame {
     // Frame components
     private JPanel mainPanel;
     private JButton viewStockButton;
@@ -19,9 +19,8 @@ public class SupplierW extends JFrame {
     private JButton requestReadyOrdersButton;
     private JButton logOutButton;
 
-
     // Frame constructor
-    public SupplierW() {
+    public SupplierFrame() {
         // Frame attributes
         setTitle("Supplier Interface");
         setDefaultCloseOperation((JFrame.EXIT_ON_CLOSE));
@@ -82,9 +81,9 @@ public class SupplierW extends JFrame {
         requestReadyOrdersButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                ReadyOrdersFrame readyOrdersFrame = new ReadyOrdersFrame();
-                readyOrdersFrame.setSize(450,400);
-                readyOrdersFrame.setVisible(true);
+                ShipOrdersFrame shipOrdersFrame = new ShipOrdersFrame();
+                shipOrdersFrame.setSize(450,400);
+                shipOrdersFrame.setVisible(true);
             }
         });
         requestReadyOrdersButton.setBounds(300,0,170,25); // right 60+85
@@ -110,7 +109,7 @@ public class SupplierW extends JFrame {
     } // end ossSupplier constructor
 
     public static void main(String[] args) {
-        SupplierW supplierFrame = new SupplierW();
+        SupplierFrame supplierFrame = new SupplierFrame();
         supplierFrame.setSize(615,450);
         supplierFrame.setVisible(true);
     }

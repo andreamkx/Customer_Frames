@@ -1,4 +1,4 @@
-package SupplierWindow;
+package SupplierFrame;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -8,14 +8,14 @@ import java.io.*;
 import java.util.Scanner;
 
 class shipButton {
+    private JPanel shipOrdersPanel;
     private JButton shipB;
     private String orderRead;
-    private JPanel readyOrdersPanel;
 
     shipButton(String read, JButton button, JPanel panel){
         this.orderRead = read;
         this.shipB = button;
-        this.readyOrdersPanel = panel;
+        this.shipOrdersPanel = panel;
 
         // Ship order associated with shipB button
         shipB.addActionListener(new ActionListener() {
@@ -114,28 +114,27 @@ class shipButton {
                 } catch (IOException ioException) {
                     ioException.printStackTrace();
                 }
-                JOptionPane.showMessageDialog(readyOrdersPanel, "Order Shipped");
+                JOptionPane.showMessageDialog(shipOrdersPanel, "Order Shipped");
                 shipB.setText("Shipped");
                 shipB.removeNotify();
             }
         });// end of shipButton actionEvent
-    } // end of shipButton constructors
+    } // end of shipButton constructor
 }
 
-
-class ReadyOrdersFrame extends JFrame {
-    JPanel readyOrdersPanel;
+public class ShipOrdersFrame extends JFrame {
+    JPanel shipOrdersPanel;
     int buttonxCoord = 10;
     int buttonyCoord = 0;
 
-    ReadyOrdersFrame() {
+    ShipOrdersFrame() {
         // set frame attributes
         setTitle("Ready Orders");
         setDefaultCloseOperation((JFrame.DISPOSE_ON_CLOSE));
-        readyOrdersPanel = new JPanel();
-        readyOrdersPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-        setContentPane(readyOrdersPanel);
-        readyOrdersPanel.setLayout(null);
+        shipOrdersPanel = new JPanel();
+        shipOrdersPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        setContentPane(shipOrdersPanel);
+        shipOrdersPanel.setLayout(null);
 
         // Open orders file for reading and populating frame
         File ordersFile = new File("orders.txt");
@@ -156,9 +155,9 @@ class ReadyOrdersFrame extends JFrame {
                 // create new button and action for button depending on order in String read
                 JButton shipB = new JButton();
                 shipB.setText("Ship");
-                shipButton rOrder = new shipButton(read, shipB, readyOrdersPanel);
+                shipButton rOrder = new shipButton(read, shipB, shipOrdersPanel);
                 shipB.setBounds(buttonxCoord, buttonyCoord, 80, 25);
-                readyOrdersPanel.add(shipB);
+                shipOrdersPanel.add(shipB);
 
                 // Populate label with each item's info
                 String toss = ordersInput.nextLine(); // toss {
@@ -172,7 +171,7 @@ class ReadyOrdersFrame extends JFrame {
                 }
                 order1L.setText(itemOrdered);
                 order1L.setBounds(buttonxCoord+115, buttonyCoord, 400, 25);
-                readyOrdersPanel.add(order1L);
+                shipOrdersPanel.add(order1L);
                 buttonyCoord += 35;
                 toss = ordersInput.nextLine();
                 // System.out.println(toss);

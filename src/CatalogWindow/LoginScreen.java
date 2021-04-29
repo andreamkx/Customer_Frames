@@ -124,16 +124,14 @@ public class LoginScreen extends JFrame {
 							Catalog.main(null);
 							dispose();
 							break;
-							/*
-							JFrame loggedIn = new JFrame("Logged In Screen");
-							if (JOptionPane.showConfirmDialog(loggedIn, "You have Logged out, would you like to log in again?", "Login Systems", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_NO_OPTION) {
-								usernameTF.setText("");
-								passwordPF.setText("");
-							}
-							else {
-								System.exit(0);
-							}
-							*/
+//							JFrame loggedIn = new JFrame("Logged In Screen");
+//							if (JOptionPane.showConfirmDialog(loggedIn, "You have Logged out, would you like to log in again?", "Login Systems", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_NO_OPTION) {
+//								usernameTF.setText("");
+//								passwordPF.setText("");
+//							}
+//							else {
+//								System.exit(0);
+//							}
 						}
 						else{
 							JOptionPane.showMessageDialog(null, "Invalid Username / Password Combo", "Error", JOptionPane.ERROR_MESSAGE);

@@ -1,21 +1,20 @@
-package SupplierWindow;
+package SupplierFrame;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
 import java.util.Scanner;
 
 // Assigns specific actions with each button based on the order associated with the button.
-class reserveButton {
+class ProcessButton {
+    private JPanel orderPanel;
     private JButton processB;
     private String orderRead;
-    private JPanel orderPanel;
 
     // reserveButton constructor
-    reserveButton(String order, JButton button, JPanel panel){
+    ProcessButton(String order, JButton button, JPanel panel){
         this.orderRead = order;
         this.processB = button;
         this.orderPanel = panel;
@@ -181,10 +180,10 @@ public class OrdersFrame extends JFrame {
 
             if (read.contains("ordered")) {
                 // Create new button and assign an action depending on order
-                JButton reserveB = new JButton("Process");
-                reserveButton oOrder = new reserveButton(read, reserveB, ordersPanel);
-                ordersPanel.add(reserveB);
-                reserveB.setBounds(buttonxCoord, buttonyCoord, 100, 25);
+                JButton processB = new JButton("Process");
+                ProcessButton oOrder = new ProcessButton(read, processB, ordersPanel);
+                ordersPanel.add(processB);
+                processB.setBounds(buttonxCoord, buttonyCoord, 100, 25);
 
                 // reserveB.set
 
