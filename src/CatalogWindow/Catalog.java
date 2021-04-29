@@ -16,12 +16,12 @@ import java.util.Scanner;
 
 // Associates specific 'Add to Cart' actions with each item
 class CartItem {
-    public String itemNameAndDescription;
-    public String itemPrice;
-    public double quantity;
+    private String itemNameAndDescription;
+    private String itemPrice;
+    private double quantity;
 
-    JTextField quantityInputField;
-    JButton addToCart;
+    private JTextField quantityInputField;
+    private JButton addToCart;
 
     CartItem(JTextField field, String nameAndDesc, String price, JButton button) {
         itemNameAndDescription = nameAndDesc;
@@ -33,9 +33,20 @@ class CartItem {
             @Override
             public void actionPerformed(ActionEvent e){
                 quantity = Double.parseDouble(quantityInputField.getText()); // get value when button pressed
-
             }
         });
+    }
+
+    String getItemNameAndDescription(){
+        return itemNameAndDescription;
+    }
+
+    String getItemPrice(){
+        return itemPrice;
+    }
+
+    double getQuantity(){
+        return quantity;
     }
 }
 
@@ -70,9 +81,9 @@ class CartFrame extends JFrame {
 
         // for each item in the array, display in the cart and add prices to subtotal
         for (CartItem item: array){
-            if (item.quantity > 0){
-                subtotal += item.quantity * Double.parseDouble(item.itemPrice);
-                JLabel cartItemLabel = new JLabel("$" + item.itemPrice + " x" + String.format("%,.0f", item.quantity) + ": " + item.itemNameAndDescription);
+            if (item.getQuantity() > 0){
+                subtotal += item.getQuantity() * Double.parseDouble(item.getItemPrice());
+                JLabel cartItemLabel = new JLabel("$" + item.getItemPrice() + " x" + String.format("%,.0f", item.getQuantity()) + ": " + item.getItemNameAndDescription());
                 cartItemLabel.setBounds(xCoord,yCoord+30,400, 25);
                 cartPanel.add(cartItemLabel);
                 yCoord+=30;
@@ -148,6 +159,7 @@ public class Catalog extends JFrame {
                         break;
                     }
                 }
+
                 while( input.hasNextLine() ){ // find user premium status
                     userInfo = input.nextLine();
                     if (userInfo.contains("Premium")) break;

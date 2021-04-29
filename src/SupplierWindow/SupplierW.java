@@ -64,7 +64,7 @@ public class SupplierW extends JFrame {
         viewStockButton.setBounds(10,0,100,25);
         mainPanel.add(viewStockButton);
 
-        // Populates a new frame of out orders to be processed. Processing orders checks if supplier has enough stock.
+        // Populates a new frame with out orders to be processed. Processing orders checks if supplier has enough stock.
         requestOrdersButton = new JButton("Request Orders");
         requestOrdersButton.addActionListener(new ActionListener() {
             @Override
@@ -77,7 +77,7 @@ public class SupplierW extends JFrame {
         requestOrdersButton.setBounds(130,0,150,25); // right +120
         mainPanel.add(requestOrdersButton);
 
-        // Populates a new frame with "ready" orders that must be shipped. Shipping orders subtracts them from stock.
+        // Populates a new frame with ready orders that must be shipped. Shipping orders subtracts them from stock.
         requestReadyOrdersButton = new JButton("Request Ready Orders");
         requestReadyOrdersButton.addActionListener(new ActionListener() {
             @Override
