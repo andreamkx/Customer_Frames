@@ -1,5 +1,0 @@
-custId,custPassword,custName,custAddress,custPhone,custPremium,isCustorSupp
-1000,golden,golden name,golden city,822 221 2323,Y,Customer
-1001,silver,silver name,silver city,232 221 3221,N,Customer
-1002,copper,copper name,copper city,921 232 5422,N,Customer
-1003,ferrous,ferrous name,ferrous city,454 232 1222,N,Supplier

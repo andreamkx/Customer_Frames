@@ -1,6 +1,6 @@
 Username:user1na
 Password:pass
-Name:derp
+Name:User1
 Address:1223 check
 Phone#:654643164684
 CC#:65468431678434684
@@ -8,7 +8,7 @@ Premium:true
 
 Username:user2na
 Password:pass
-Name:herp
+Name:User2
 Address:123chewfn
 Phone#:646813848343
 CC#:646434643438434
@@ -16,7 +16,7 @@ Premium:false
 
 Username:user3na
 Password:pass
-Name:schleep
+Name:User3
 Address:124iosdf
 Phone#:66535484343
 CC#:354398431384666
@@ -24,7 +24,7 @@ Premium:false
 
 Username:user4na
 Password:pass
-Name:heather
+Name:User4
 Address:38123adfjndafjn
 Phone#:65468432154
 CC#:313846433487897654
@@ -32,7 +32,7 @@ Premium:true
 
 Username:user5na
 Password:pass
-Name:health
+Name:User5
 Address:124aodifhaef
 Phone#:54315443
 CC#:343484343

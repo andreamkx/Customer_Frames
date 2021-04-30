@@ -48,14 +48,16 @@ class viewInvoiceButton {
                         // populate string with order info
                         String orderInfo = "Date: " + arr[3] +
                                 "\nTotal: $" + arr[4] +
-                                "\nPayment Info: Credit Card used - " + arr[5] +
+                                "\nPayment Info: Credit Card used [" + arr[5] + "]\n"+
                                 "\nITEMS: ";
                         orderLine = ordersInput.nextLine(); // toss {
 
                         // populate string with ordered items
                         while (!ordersInput.hasNext("}")){
                             orderLine = ordersInput.nextLine();
-                            orderInfo += "\n" + orderLine;
+                            String[] sArr = orderLine.split(" ", 3);
+
+                            orderInfo += "\n" + sArr[0] + " $" + sArr[1] + " x" + sArr[2];
                         }
 
                         JOptionPane.showMessageDialog(viewOrdersPanel, orderInfo);
@@ -116,9 +118,9 @@ class viewOrder extends JFrame {
 
 // Display Make Order Frame
 class makeorder extends JFrame {
-    private JLabel mailOrderLabel = new JLabel("Mail Order");
+    private JLabel mailOrderLabel = new JLabel("Mail Order to address (adds $3 to order total):");
     private JTextField textField1;
-    private JLabel pickupLabel = new JLabel("Or select a pickup location");
+    private JLabel pickupLabel = new JLabel("Or select a pickup location:");
     private JRadioButton location1RadioButton;
     private JRadioButton location2RadioButton;
     private JRadioButton location3RadioButton;
@@ -141,10 +143,10 @@ class makeorder extends JFrame {
 
         orderTotal = subtotal;
 
-        mailOrderLabel.setBounds(10, 5, 125,25);
+        mailOrderLabel.setBounds(10, 5, 300,25);
         mainPanel.add(mailOrderLabel);
 
-        pickupLabel.setBounds(10,75,200,25);
+        pickupLabel.setBounds(10,75,300,25);
         mainPanel.add(pickupLabel);
 
         textField1 = new JTextField();
@@ -171,7 +173,7 @@ class makeorder extends JFrame {
 //                location3RadioButton.removeNotify();
             }
         });
-        location1RadioButton.setBounds(10,115,200,25);
+        location1RadioButton.setBounds(10,115,350,25);
         mainPanel.add(location1RadioButton);
 
 
@@ -184,7 +186,7 @@ class makeorder extends JFrame {
 //                location3RadioButton.removeNotify();
             }
         });
-        location2RadioButton.setBounds(10, 135, 200, 25);
+        location2RadioButton.setBounds(10, 135, 350, 25);
         mainPanel.add(location2RadioButton);
 
         location3RadioButton = new JRadioButton("Texas Tech University Post Office");
@@ -196,7 +198,7 @@ class makeorder extends JFrame {
 //                location2RadioButton.removeNotify();
             }
         });
-        location3RadioButton.setBounds(10, 155, 200, 25);
+        location3RadioButton.setBounds(10, 155, 350, 25);
         mainPanel.add(location3RadioButton);
 
         submitButton = new JButton("Submit");
@@ -302,6 +304,8 @@ class orderprocess implements Runnable {
             userInfo = input.nextLine();
             if (userInfo.contains("CC#")) break;
         }
+        input.close();
+
         String[] arr = userInfo.split(":", 2);
         CCNum = arr[1];
 
@@ -310,35 +314,36 @@ class orderprocess implements Runnable {
         System.out.println("THREAD RESPONSE: " + q.response);
         if (q.response.equals("-1")) { // if invalid ccnum, ask for new
 //          **DOUBLE CHECK
-            String newCreditCardNum = JOptionPane.showInputDialog("Enter a new credit card number: ");
+            String newCreditCardNum = JOptionPane.showInputDialog("Current credit card number invalid. Enter a new credit card number: ");
             //int newCCNum = Integer.parseInt((newCreditCardNum));
             System.out.println("New creditcard num given: " + newCreditCardNum);
             q.send(newCreditCardNum);
             if (q.response.equals("-1")){
-                System.out.println("Too many invalid attempts.");
-                JOptionPane.showMessageDialog(null, "Too many invalid attempts. Order was not completed");
+                // System.out.println("Too many invalid attempts.");
+                JOptionPane.showMessageDialog(null, "Too many invalid credit card entries. Order was not completed");
             }
             else {
                 System.out.println("Adding new credit card to customer info");
+                storeOrder(q.response, q.message);
             }
         }
+        else {
+            storeOrder(q.response, q.message);
+        }
         System.out.println("FINAL RESPONSE: " + q.response);
-
-        storeOrder(q.response);
     }
 
-    public void storeOrder(String authorizationNum) {
-
+    public void storeOrder(String authorizationNum, String ccNum) {
         String orderInfo = "";
-        orderInfo += LoginScreen.usernameLogged + " " + authorizationNum + " ordered 04/30/2021 "  + makeorder.orderTotal + " " + makeorder.userCCNum + "\n{\n";
+        orderInfo += "\n" + LoginScreen.usernameLogged + " " + authorizationNum + " ordered 04/30/2021 "  + makeorder.orderTotal + " " + ccNum + "\n{\n";
 
         for (CartItem item: Catalog.cartItemsArr) {
             if (item.getQuantity() != 0) {
                 String[] sArray = item.getItemNameAndDescription().split(":", 2);
-                orderInfo += sArray[0] + " " + item.getItemPrice() + " " + item.getQuantity() + "\n";
+                orderInfo += sArray[0] + " " + item.getItemPrice() + " " + item.getQuantity();
             }
         }
-        orderInfo += "}\n";
+        orderInfo += "\n}";
         try {
             Files.write(Paths.get("orders.txt"), orderInfo.getBytes(), StandardOpenOption.APPEND);
         }catch (IOException e) {
@@ -378,7 +383,6 @@ class bankprocess implements Runnable {
                 Random rand = new Random();
                 authNum = rand.nextInt(10000);
                 // charge customer bank account
-                ;
             }
         }
         return String.valueOf(authNum);
@@ -388,7 +392,7 @@ class bankprocess implements Runnable {
 class CartItem {
     private String itemNameAndDescription;
     private String itemPrice;
-    private double quantity;
+    private int quantity;
 
     private JTextField quantityInputField;
     private JButton addToCart;
@@ -402,7 +406,7 @@ class CartItem {
         addToCart.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e){
-                quantity = Double.parseDouble(quantityInputField.getText()); // get value when button pressed
+                quantity = Integer.parseInt(quantityInputField.getText()); // get value when button pressed
             }
         });
     }
@@ -415,7 +419,7 @@ class CartItem {
         return itemPrice;
     }
 
-    double getQuantity(){
+    int getQuantity(){
         return quantity;
     }
 }
@@ -454,7 +458,7 @@ class CartFrame extends JFrame {
         for (CartItem item: Catalog.cartItemsArr){
             if (item.getQuantity() > 0){
                 subtotal += item.getQuantity() * Double.parseDouble(item.getItemPrice());
-                JLabel cartItemLabel = new JLabel("$" + item.getItemPrice() + " x" + String.format("%,.0f", item.getQuantity()) + ": " + item.getItemNameAndDescription());
+                JLabel cartItemLabel = new JLabel("$" + item.getItemPrice() + " x" +  item.getQuantity() + ": " + item.getItemNameAndDescription());
                 cartItemLabel.setBounds(xCoord,yCoord+30,400, 25);
                 cartPanel.add(cartItemLabel);
                 yCoord+=30;

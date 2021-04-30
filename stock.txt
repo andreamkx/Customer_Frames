@@ -1,3 +1,6 @@
-apple 2 8
-banana 7 8
-orange 5 10
+apple 15 5
+banana 15 5
+orange 15 5
+Short-Sleeve 50 46
+Long-Sleeve 50 50
+Hoodie 50 50
