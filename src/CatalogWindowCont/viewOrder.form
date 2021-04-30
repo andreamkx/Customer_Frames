@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="viewOrder">
+  <grid id="27dc6" binding="mainPanel" layout-manager="GridLayoutManager" row-count="6" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+    <margin top="0" left="0" bottom="0" right="0"/>
+    <constraints>
+      <xy x="20" y="20" width="529" height="477"/>
+    </constraints>
+    <properties/>
+    <border type="none"/>
+    <children>
+      <component id="807cf" class="javax.swing.JLabel" binding="custLabel">
+        <constraints>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="259" height="27"/>
+          </grid>
+        </constraints>
+        <properties>
+          <background color="-2503065"/>
+          <font name="JetBrains Mono" size="20" style="0"/>
+          <foreground color="-14465537"/>
+          <text value="Customer Name"/>
+        </properties>
+      </component>
+      <component id="f158e" class="javax.swing.JLabel" binding="orderLabel1">
+        <constraints>
+          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="259" height="77"/>
+          </grid>
+        </constraints>
+        <properties>
+          <font name="JetBrains Mono" size="18"/>
+          <text value="Label"/>
+        </properties>
+      </component>
+      <component id="2b977" class="javax.swing.JLabel" binding="orderLabel2">
+        <constraints>
+          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="259" height="77"/>
+          </grid>
+        </constraints>
+        <properties>
+          <font size="18"/>
+          <text value="Label"/>
+        </properties>
+      </component>
+      <component id="76030" class="javax.swing.JLabel" binding="orderLabel3">
+        <constraints>
+          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="259" height="77"/>
+          </grid>
+        </constraints>
+        <properties>
+          <font size="18"/>
+          <text value="Label"/>
+        </properties>
+      </component>
+      <component id="ebfa4" class="javax.swing.JLabel" binding="orderLabel4">
+        <constraints>
+          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="259" height="77"/>
+          </grid>
+        </constraints>
+        <properties>
+          <font size="18"/>
+          <text value="Label"/>
+        </properties>
+      </component>
+      <component id="5ce86" class="javax.swing.JLabel" binding="orderLabel5">
+        <constraints>
+          <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="0" indent="0" use-parent-layout="false">
+            <preferred-size width="259" height="77"/>
+          </grid>
+        </constraints>
+        <properties>
+          <font size="18"/>
+          <text value="Label"/>
+        </properties>
+      </component>
+      <component id="88d55" class="javax.swing.JLabel" binding="appLabel">
+        <constraints>
+          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="4" anchor="8" fill="0" indent="1" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <background color="-1576431"/>
+          <font name="JetBrains Mono Medium" size="18" style="0"/>
+          <foreground color="-65536"/>
+          <horizontalAlignment value="0"/>
+          <horizontalTextPosition value="0"/>
+          <text value="Online Shopping System"/>
+        </properties>
+      </component>
+      <component id="58677" class="javax.swing.JButton" binding="viewOrderButton1">
+        <constraints>
+          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font size="18"/>
+          <text value="View Order"/>
+        </properties>
+      </component>
+      <component id="c3890" class="javax.swing.JButton" binding="viewOrderButton2" default-binding="true">
+        <constraints>
+          <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font size="18"/>
+          <text value="View Order"/>
+        </properties>
+      </component>
+      <component id="81cd5" class="javax.swing.JButton" binding="viewOrderButton3" default-binding="true">
+        <constraints>
+          <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font size="18"/>
+          <text value="View Order"/>
+        </properties>
+      </component>
+      <component id="f05da" class="javax.swing.JButton" binding="viewOrderButton4" default-binding="true">
+        <constraints>
+          <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font size="18"/>
+          <text value="View Order"/>
+        </properties>
+      </component>
+      <component id="67f0c" class="javax.swing.JButton" binding="viewOrderButton5">
+        <constraints>
+          <grid row="5" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties>
+          <font size="18"/>
+          <text value="View Order"/>
+        </properties>
+      </component>
+    </children>
+  </grid>
+</form>
