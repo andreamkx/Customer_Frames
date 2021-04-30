@@ -1,4 +1,4 @@
-package CatalogWindow;
+package CatalogAndLogin;
 
 import java.awt.EventQueue;
 
@@ -24,7 +24,7 @@ import javax.swing.JButton;
 @SuppressWarnings("serial")
 public class LoginScreen extends JFrame {
 
-	public static String username; // Added to access user information during order placement
+	public static String usernameLogged; // Added to access user information during order placement
 	private JPanel contentPane;
 	private JTextField usernameTF;
 	private JPasswordField passwordPF;
@@ -113,10 +113,13 @@ public class LoginScreen extends JFrame {
 					FileReader fr = new FileReader(inputFile);
 					RandomAccessFile raf = new RandomAccessFile(inputFile, "rw");
 					int count = 0;
+
+					String username = "";
+					String password = "";
 					for(int j = 0; j < line; j+=8){
 						System.out.println("count " + j);
-						String username = raf.readLine().substring(9);
-						String password = raf.readLine().substring(9);
+						username = raf.readLine().substring(9);
+						password = raf.readLine().substring(9);
 						System.out.println(username);
 						System.out.println(password);
 						if(usernamein.equals(username) && passwordin.equals(password)){
@@ -129,7 +132,7 @@ public class LoginScreen extends JFrame {
 					}
 					if(count == 1) {
 						JOptionPane.showMessageDialog(null, "Login Successful", "Success", JOptionPane.INFORMATION_MESSAGE);
-						LoginScreen.username = username; // ** Store username for place order use case
+						LoginScreen.usernameLogged = username; // ** Store username for place order use case
 						Catalog.main(null);
 						dispose();
 					}

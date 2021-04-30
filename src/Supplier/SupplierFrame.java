@@ -1,6 +1,6 @@
-package SupplierFrame;
+package Supplier;
 
-import CatalogWindow.LoginScreen;
+import CatalogAndLogin.LoginScreen;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

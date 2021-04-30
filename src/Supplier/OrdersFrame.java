@@ -1,4 +1,4 @@
-package SupplierFrame;
+package Supplier;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

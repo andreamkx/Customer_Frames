@@ -1,19 +1,23 @@
-package CatalogWindow;
+package CatalogAndLogin;
 // TEST COMMENT
-import CatalogWindowCont.makeorder;
-// import CatalogWindowCont.viewOrder;
 
 import java.awt.event.*;
-import java.awt.Window;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.io.*;
-import java.nio.file.Path;
+import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Scanner;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+
+// Associates specific actions with each view invoice button
 class viewInvoiceButton {
     private JPanel viewOrdersPanel;
     private JButton viewInvoiceB;
@@ -44,11 +48,12 @@ class viewInvoiceButton {
                         // populate string with order info
                         String orderInfo = "Date: " + arr[3] +
                                 "\nTotal: $" + arr[4] +
-                                "\nPayment Info: " + arr[5];
+                                "\nPayment Info: Credit Card used - " + arr[5] +
+                                "\nITEMS: ";
                         orderLine = ordersInput.nextLine(); // toss {
 
                         // populate string with ordered items
-                        while (orderLine != "}"){
+                        while (!ordersInput.hasNext("}")){
                             orderLine = ordersInput.nextLine();
                             orderInfo += "\n" + orderLine;
                         }
@@ -62,12 +67,11 @@ class viewInvoiceButton {
     } // end viewInvoiceButton constructor
 }
 
-// Associates specific 'Add to Cart' actions with each item
+// Displays View Order Frame
 class viewOrder extends JFrame {
     private JPanel mainPanel;
     int xCoord = 5;
     int yCoord = 10;
-
 
     public viewOrder() {
         setTitle("Your Orders");
@@ -90,14 +94,14 @@ class viewOrder extends JFrame {
         while (ordersInput.hasNextLine()) {
             read = ordersInput.nextLine();
 
-            if (read.contains(LoginScreen.username)){
+            if (read.contains(LoginScreen.usernameLogged)){
                 String[] arr = read.split(" ", 4);
-                JLabel orderInfoLabel = new JLabel("Order #: " + arr[1] + "Order Status: " + arr[2]);
-                orderInfoLabel.setBounds(xCoord, yCoord, 200, 25);
+                JLabel orderInfoLabel = new JLabel("Order #: " + arr[1] + " Order Status: " + arr[2]);
+                orderInfoLabel.setBounds(xCoord, yCoord, 250, 25);
                 mainPanel.add(orderInfoLabel);
 
                 JButton viewInvoiceB = new JButton("View Invoice");
-                viewInvoiceB.setBounds(xCoord + 450, yCoord, 125, 25);
+                viewInvoiceB.setBounds(xCoord + 300, yCoord, 125, 25);
                 mainPanel.add(viewInvoiceB);
 
                 viewInvoiceButton button = new viewInvoiceButton(read, viewInvoiceB, mainPanel);
@@ -108,6 +112,291 @@ class viewOrder extends JFrame {
 
     }
 }
+
+// Display Make Order Frame
+class makeorder extends JFrame {
+    private JLabel mailOrderLabel = new JLabel("Mail Order");
+    private JTextField textField1;
+    private JLabel pickupLabel = new JLabel("Or select a pickup location");
+    private JRadioButton location1RadioButton;
+    private JRadioButton location2RadioButton;
+    private JRadioButton location3RadioButton;
+    private JButton submitButton;
+    private JPanel mainPanel;
+
+    double orderTotal;
+
+    String userCCNum;
+
+    public makeorder(double subtotal, List<CartItem> array) {
+        userCCNum = "";
+        setTitle("Place Order");
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setBounds(0,0,500,500);
+        mainPanel = new JPanel();
+        mainPanel.setBorder(new EmptyBorder(5,5,5,5));
+        setContentPane(mainPanel);
+        mainPanel.setLayout(null);
+
+        orderTotal = subtotal;
+
+        mailOrderLabel.setBounds(10, 5, 125,25);
+        mainPanel.add(mailOrderLabel);
+
+        pickupLabel.setBounds(10,50,200,25);
+        mainPanel.add(pickupLabel);
+
+        textField1 = new JTextField();
+        textField1.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // String inputaddress = textField1.getText();
+                // choosemail();
+                orderTotal += 3;
+                location1RadioButton.removeNotify();
+                location2RadioButton.removeNotify();
+                location3RadioButton.removeNotify();
+            }
+        });
+        textField1.setBounds(10, 25, 300,25);
+        mainPanel.add(textField1);
+
+        location1RadioButton = new JRadioButton("Lubbock Downtown Post Office");
+        location1RadioButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                textField1.removeNotify();
+                location2RadioButton.removeNotify();
+                location3RadioButton.removeNotify();
+            }
+        });
+        location1RadioButton.setBounds(10,115,200,25);
+        mainPanel.add(location1RadioButton);
+
+        boolean chosen = false;
+        location2RadioButton = new JRadioButton("Lubbock Amazon Post Office");
+        location2RadioButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                textField1.removeNotify();
+                location1RadioButton.removeNotify();
+                location3RadioButton.removeNotify();
+            }
+        });
+        location2RadioButton.setBounds(10, 135, 200, 25);
+        mainPanel.add(location2RadioButton);
+
+        location3RadioButton = new JRadioButton("Texas Tech University Post Office");
+        location3RadioButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                textField1.removeNotify();
+                location1RadioButton.removeNotify();
+                location2RadioButton.removeNotify();
+            }
+        });
+        location3RadioButton.setBounds(10, 155, 200, 25);
+        mainPanel.add(location3RadioButton);
+
+        submitButton = new JButton("Submit");
+        submitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Scanner input = null;
+
+                // find premium status and ccnum
+                try {
+                    input = new Scanner(new File("DataStuff/LoginData.txt"));
+                } catch (FileNotFoundException fileNotFoundException) {
+                    fileNotFoundException.printStackTrace();
+                }
+                String userInfo = "";
+
+                // find user premium status to use appropriate price
+                while( input.hasNextLine() ){ // find user in file
+                    userInfo = input.nextLine();
+                    if (userInfo.contains(LoginScreen.usernameLogged)){
+                        break;
+                    }
+                }
+                while( input.hasNextLine() ){ // find user premium status
+                    userInfo = input.nextLine();
+                    if (userInfo.contains("CC#")){
+                        String[] arr = userInfo.split(":",2);
+                        userCCNum = arr[1];
+                    }
+                    if (userInfo.contains("Premium")) break;
+                }
+                if (userInfo.contains("true")) {
+                    // opens option pane prompting for premium membership continuation
+                    premiumFirstOrder();
+                }
+
+                System.out.println(userCCNum);
+                MessageBufferResponse q = new MessageBufferResponse();
+                //String userCCNUm;
+                new orderprocess(q, userCCNum);
+                new bankprocess(q);
+                System.out.println("PRINTING: " + MessageBufferResponse.response);
+                if ( (MessageBufferResponse.response).equals("-1")){
+                    storeOrder(MessageBufferResponse.response, array);
+                }
+            }
+        });
+        submitButton.setBounds(250, 400, 125, 25 );
+        mainPanel.add(submitButton);
+    } // end make order constructor
+
+    public void storeOrder(String response, List<CartItem> array) {
+        // use supplier as reference to store order info
+        String orderInfo = "";
+        // username authnum status date total creditcardnum
+        //{
+        //items
+        //}
+        orderInfo += LoginScreen.usernameLogged + " " + response + " " + "ordered" + "04/30/2021"  + orderTotal + " " + userCCNum + "\n{\n";
+
+        for (CartItem item: array) {
+            String[] sArray = item.getItemNameAndDescription().split(":", 2);
+            orderInfo += sArray[0] + " " + item.getItemPrice() + " " + item.getQuantity()+"\n";
+        }
+        orderInfo += "}\n";
+        try {
+            Files.write(Paths.get("orders.txt"), orderInfo.getBytes(), StandardOpenOption.APPEND);
+        }catch (IOException e) {
+            System.out.println("File not Found");
+        }
+
+
+    }
+
+    void premiumFirstOrder(){
+        if (JOptionPane.showConfirmDialog(mainPanel, "Would you like to continue your premium membership? This will add $40 to your subtotal", "Premium customer", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_NO_OPTION) {
+            orderTotal+=40;
+            JOptionPane.showMessageDialog(mainPanel, "Your total is now $" +  orderTotal);
+        }
+        else {
+            System.out.println("Changing premium status to false");
+        }
+    }
+}
+
+// Threading classes
+class MessageBufferResponse {
+    static String response; // Authoriztion num
+    static String message; // CCNum
+
+    private boolean messageBufferFull = false;
+    private boolean responseBufferFull = false;
+
+    // customer calls this to send ccnum, then returns authnum
+    synchronized String send(String creditCardNum) {
+        message = creditCardNum;
+        messageBufferFull = true;
+        notify();
+
+        while (!responseBufferFull)
+            try {
+                wait(); // starts banking system thread
+            } catch (InterruptedException e) {
+                System.out.println("InterruptedException caught");
+            }
+
+        System.out.println("Response of this operation is : " + response);
+        responseBufferFull = false;
+        notify();
+        return (response);
+    }
+
+    // bankingSystem waits to get ccNum
+    synchronized String receive() {
+        while (!messageBufferFull) {
+            try {
+                wait(); // wait until ccnum is sent to buffer
+            } catch (InterruptedException e) {
+                System.out.println("InterruptedException caught");
+            }
+        }
+        messageBufferFull = false;
+        return (message);
+    }
+
+    synchronized void reply(String authorizationNum) {
+        response = authorizationNum;
+        responseBufferFull = true;
+        notify();
+    }
+}
+
+
+class orderprocess implements Runnable {
+    MessageBufferResponse q;
+    String CCNum;
+
+    public orderprocess(MessageBufferResponse buffer, String userCCNum) {
+        this.q = buffer;
+        this.CCNum = userCCNum;
+        new Thread(this, "Customer").start();
+    }
+
+    @Override
+    public void run() {
+        String authorizationNum = q.send(CCNum);
+        System.out.println("THREAD RESPONSE: " + authorizationNum);
+        if (authorizationNum.equals("-1")) { // if invalid ccnum, ask for new
+//          **DOUBLE CHECK
+            String newCreditCardNum = JOptionPane.showInputDialog("Enter a new credit card number: ");
+            //int newCCNum = Integer.parseInt((newCreditCardNum));
+            System.out.println("new creditcard num given: " + newCreditCardNum);
+            authorizationNum = q.send(newCreditCardNum);
+
+            if (authorizationNum.equals("-1")){
+                System.out.println("too many invalid attempts.");
+            }
+            else {
+                System.out.println("Adding new credit card to customer info");
+            }
+        }
+        System.out.println("FINAL RESPONSE: " + q.response);
+    }
+}
+
+class bankprocess implements Runnable {
+    MessageBufferResponse q;
+
+    public bankprocess(MessageBufferResponse buffer) {
+        this.q = buffer;
+        new Thread(this, "Supplier").start();
+    }
+    @Override
+    public void run() {
+        String authNum = bankApprove(q.receive());
+        System.out.println("Auth num generated: " + authNum);
+        q.reply(authNum);
+    }
+    String bankApprove(String testCC) {
+        int authNum = -1;
+        Scanner input = null;
+        try {
+            input = new Scanner(new File("bankSystem.txt"));
+        } catch (FileNotFoundException fileNotFoundException) {
+            fileNotFoundException.printStackTrace();
+        }
+
+        while (input.hasNextLine()){
+            if (input.nextLine().equals(testCC)){
+                Random rand = new Random();
+                authNum = rand.nextInt(10000);
+                // charge customer bank account
+                ;
+            }
+        }
+        return String.valueOf(authNum);
+    }
+}
+
+
+
 class CartItem {
     private String itemNameAndDescription;
     private String itemPrice;
@@ -165,8 +454,8 @@ class CartFrame extends JFrame {
         placeOrderButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e){
-               makeorder frame = new makeorder(subtotal);
-               frame.setBounds(150,100,530,400);
+               makeorder frame = new makeorder(subtotal, array);
+               frame.setBounds(0,0,450,450);
                frame.setVisible(true);
             }
         });
@@ -216,9 +505,9 @@ public class Catalog extends JFrame {
             Scanner in = new Scanner(new File("Catalog.txt"));
 
             while (in.hasNextLine()) {
-                String s = in.nextLine();
-                System.out.println(s);
-                String[] sArray = s.split(",", 3);
+                String sTEST = in.nextLine();
+                System.out.println(sTEST);
+                String[] sArray = sTEST.split(",", 3);
                 JLabel itemJLabel = new JLabel(sArray[0]);
                 itemJLabel.setBounds(xCoord, yCoord, 375,25);
                 rootJPanel.add(itemJLabel);
@@ -253,8 +542,8 @@ public class Catalog extends JFrame {
                 while( input.hasNextLine() ){ // find user in file
                     userInfo = input.nextLine();
                     System.out.println("IN LOGIN READING " + userInfo);
-                    if (userInfo.contains(LoginScreen.username)){
-                        System.out.println("TESTING USERNAME READ: " + LoginScreen.username);
+                    if (userInfo.contains(LoginScreen.usernameLogged)){
+                        System.out.println("TESTING USERNAME READ: " + LoginScreen.usernameLogged);
                         break;
                     }
                 }
@@ -302,7 +591,7 @@ public class Catalog extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 CartFrame cartFrame = new CartFrame(cartItemsArr);
-                cartFrame.setSize(400,400);
+                cartFrame.setSize(450,450);
                 cartFrame.setVisible(true);
             }
         });
@@ -315,7 +604,7 @@ public class Catalog extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 viewOrder frame = new viewOrder();
-                frame.setSize(400,400);
+                frame.setSize(450,450);
                 frame.setVisible(true);
             }
         });

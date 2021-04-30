@@ -1,6 +1,6 @@
-package CatalogWindow;
+package CatalogAndLogin;
 
-import SupplierFrame.SupplierFrame;
+import Supplier.SupplierFrame;
 
 import java.awt.EventQueue;
 import java.awt.Font;

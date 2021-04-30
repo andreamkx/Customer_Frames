@@ -1,4 +1,4 @@
-package CatalogWindow;
+package CatalogAndLogin;
 
 import java.awt.EventQueue;
 
