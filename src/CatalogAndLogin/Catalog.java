@@ -113,6 +113,7 @@ class viewOrder extends JFrame {
     }
 }
 
+
 // Display Make Order Frame
 class makeorder extends JFrame {
     private JLabel mailOrderLabel = new JLabel("Mail Order");
@@ -124,11 +125,11 @@ class makeorder extends JFrame {
     private JButton submitButton;
     private JPanel mainPanel;
 
-    double orderTotal;
+    static double orderTotal;
 
-    String userCCNum;
+    static String userCCNum;
 
-    public makeorder(double subtotal, List<CartItem> array) {
+    public makeorder(double subtotal) {
         userCCNum = "";
         setTitle("Place Order");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -143,7 +144,7 @@ class makeorder extends JFrame {
         mailOrderLabel.setBounds(10, 5, 125,25);
         mainPanel.add(mailOrderLabel);
 
-        pickupLabel.setBounds(10,50,200,25);
+        pickupLabel.setBounds(10,75,200,25);
         mainPanel.add(pickupLabel);
 
         textField1 = new JTextField();
@@ -153,9 +154,9 @@ class makeorder extends JFrame {
                 // String inputaddress = textField1.getText();
                 // choosemail();
                 orderTotal += 3;
-                location1RadioButton.removeNotify();
-                location2RadioButton.removeNotify();
-                location3RadioButton.removeNotify();
+//                location1RadioButton.removeNotify();
+//                location2RadioButton.removeNotify();
+//                location3RadioButton.removeNotify();
             }
         });
         textField1.setBounds(10, 25, 300,25);
@@ -165,22 +166,22 @@ class makeorder extends JFrame {
         location1RadioButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                textField1.removeNotify();
-                location2RadioButton.removeNotify();
-                location3RadioButton.removeNotify();
+//                textField1.removeNotify();
+//                location2RadioButton.removeNotify();
+//                location3RadioButton.removeNotify();
             }
         });
         location1RadioButton.setBounds(10,115,200,25);
         mainPanel.add(location1RadioButton);
 
-        boolean chosen = false;
+
         location2RadioButton = new JRadioButton("Lubbock Amazon Post Office");
         location2RadioButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                textField1.removeNotify();
-                location1RadioButton.removeNotify();
-                location3RadioButton.removeNotify();
+//                textField1.removeNotify();
+//                location1RadioButton.removeNotify();
+//                location3RadioButton.removeNotify();
             }
         });
         location2RadioButton.setBounds(10, 135, 200, 25);
@@ -190,9 +191,9 @@ class makeorder extends JFrame {
         location3RadioButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                textField1.removeNotify();
-                location1RadioButton.removeNotify();
-                location2RadioButton.removeNotify();
+//                textField1.removeNotify();
+//                location1RadioButton.removeNotify();
+//                location2RadioButton.removeNotify();
             }
         });
         location3RadioButton.setBounds(10, 155, 200, 25);
@@ -202,95 +203,37 @@ class makeorder extends JFrame {
         submitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                Scanner input = null;
-
-                // find premium status and ccnum
-                try {
-                    input = new Scanner(new File("DataStuff/LoginData.txt"));
-                } catch (FileNotFoundException fileNotFoundException) {
-                    fileNotFoundException.printStackTrace();
+                // premiumOrderFirst()
+                if (JOptionPane.showConfirmDialog(mainPanel, "Would you like to continue your premium membership? This will add $40 to your subtotal", "Premium customer", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_NO_OPTION) {
+                    orderTotal+=40;
+                    JOptionPane.showMessageDialog(mainPanel, "Your total is now $" +  orderTotal);
                 }
-                String userInfo = "";
-
-                // find user premium status to use appropriate price
-                while( input.hasNextLine() ){ // find user in file
-                    userInfo = input.nextLine();
-                    if (userInfo.contains(LoginScreen.usernameLogged)){
-                        break;
-                    }
-                }
-                while( input.hasNextLine() ){ // find user premium status
-                    userInfo = input.nextLine();
-                    if (userInfo.contains("CC#")){
-                        String[] arr = userInfo.split(":",2);
-                        userCCNum = arr[1];
-                    }
-                    if (userInfo.contains("Premium")) break;
-                }
-                if (userInfo.contains("true")) {
-                    // opens option pane prompting for premium membership continuation
-                    premiumFirstOrder();
+                else {
+                    System.out.println("Changing premium status to false");
                 }
 
-                System.out.println(userCCNum);
                 MessageBufferResponse q = new MessageBufferResponse();
-                //String userCCNUm;
-                orderprocess orderP = new orderprocess(q, userCCNum);
-                bankprocess bankP = new bankprocess(q);
-                System.out.println("PRINTING: " + orderP.q.response);
-                if ( !(orderP.q.response).equals("-1")){
-                    storeOrder(orderP.q.response, array);
-                }
+                new orderprocess(q);
+                new bankprocess(q);
             }
         });
-        submitButton.setBounds(250, 400, 125, 25 );
+        submitButton.setBounds(250, 300, 125, 25 );
         mainPanel.add(submitButton);
     } // end make order constructor
 
-    public void storeOrder(String response, List<CartItem> array) {
-        // use supplier as reference to store order info
-        String orderInfo = "";
-        // username authnum status date total creditcardnum
-        //{
-        //items
-        //}
-        orderInfo += LoginScreen.usernameLogged + " " + response + " " + "ordered" + "04/30/2021"  + orderTotal + " " + userCCNum + "\n{\n";
-
-        for (CartItem item: array) {
-            String[] sArray = item.getItemNameAndDescription().split(":", 2);
-            orderInfo += sArray[0] + " " + item.getItemPrice() + " " + item.getQuantity()+"\n";
-        }
-        orderInfo += "}\n";
-        try {
-            Files.write(Paths.get("orders.txt"), orderInfo.getBytes(), StandardOpenOption.APPEND);
-        }catch (IOException e) {
-            System.out.println("File not Found");
-        }
-
-
-    }
-
-    void premiumFirstOrder(){
-        if (JOptionPane.showConfirmDialog(mainPanel, "Would you like to continue your premium membership? This will add $40 to your subtotal", "Premium customer", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_NO_OPTION) {
-            orderTotal+=40;
-            JOptionPane.showMessageDialog(mainPanel, "Your total is now $" +  orderTotal);
-        }
-        else {
-            System.out.println("Changing premium status to false");
-        }
-    }
 }
+
 
 // Threading classes
 class MessageBufferResponse {
-    String response; // Authoriztion num
     String message; // CCNum
+    String response; // Authorization num
 
     private boolean messageBufferFull = false;
     private boolean responseBufferFull = false;
 
     // customer calls this to send ccnum, then returns authnum
-    synchronized String send(String creditCardNum) {
+    synchronized void send(String creditCardNum) {
         message = creditCardNum;
         messageBufferFull = true;
         notify();
@@ -304,8 +247,6 @@ class MessageBufferResponse {
 
         System.out.println("Response of this operation is : " + response);
         responseBufferFull = false;
-        notify();
-        return response;
     }
 
     // bankingSystem waits to get ccNum
@@ -318,7 +259,7 @@ class MessageBufferResponse {
             }
         }
         messageBufferFull = false;
-        return (message);
+        return message;
     }
 
     synchronized void reply(String authorizationNum) {
@@ -331,34 +272,78 @@ class MessageBufferResponse {
 
 class orderprocess implements Runnable {
     MessageBufferResponse q;
-    String CCNum;
 
-    public orderprocess(MessageBufferResponse buffer, String userCCNum) {
+    public orderprocess(MessageBufferResponse buffer) {
         this.q = buffer;
-        this.CCNum = userCCNum;
         new Thread(this, "Customer").start();
     }
 
     @Override
     public void run() {
-        String authorizationNum = q.send(CCNum);
-        System.out.println("THREAD RESPONSE: " + authorizationNum);
-        if (authorizationNum.equals("-1")) { // if invalid ccnum, ask for new
+        // get ccnum and send to buffer
+        String CCNum;
+        Scanner input = null;
+        try {
+            input = new Scanner(new File("DataStuff/LoginData.txt"));
+        } catch (FileNotFoundException fileNotFoundException) {
+            fileNotFoundException.printStackTrace();
+        }
+        String userInfo = "";
+        while( input.hasNextLine() ){ // find user in file
+            userInfo = input.nextLine();
+            System.out.println("IN LOGIN READING " + userInfo);
+            if (userInfo.contains(LoginScreen.usernameLogged)){
+                //System.out.println("TESTING USERNAME READ: " + LoginScreen.usernameLogged);
+                break;
+            }
+        }
+        while(input.hasNextLine()){ // find user CCNum
+            //System.out.println("TEST");
+            userInfo = input.nextLine();
+            if (userInfo.contains("CC#")) break;
+        }
+        String[] arr = userInfo.split(":", 2);
+        CCNum = arr[1];
+
+        q.send(CCNum);
+
+        System.out.println("THREAD RESPONSE: " + q.response);
+        if (q.response.equals("-1")) { // if invalid ccnum, ask for new
 //          **DOUBLE CHECK
             String newCreditCardNum = JOptionPane.showInputDialog("Enter a new credit card number: ");
             //int newCCNum = Integer.parseInt((newCreditCardNum));
-            System.out.println("new creditcard num given: " + newCreditCardNum);
-            authorizationNum = q.send(newCreditCardNum);
-
-            if (authorizationNum.equals("-1")){
-                System.out.println("too many invalid attempts.");
+            System.out.println("New creditcard num given: " + newCreditCardNum);
+            q.send(newCreditCardNum);
+            if (q.response.equals("-1")){
+                System.out.println("Too many invalid attempts.");
+                JOptionPane.showMessageDialog(null, "Too many invalid attempts. Order was not completed");
             }
             else {
                 System.out.println("Adding new credit card to customer info");
             }
         }
         System.out.println("FINAL RESPONSE: " + q.response);
-        q.response = authorizationNum;
+
+        storeOrder(q.response);
+    }
+
+    public void storeOrder(String authorizationNum) {
+
+        String orderInfo = "";
+        orderInfo += LoginScreen.usernameLogged + " " + authorizationNum + " ordered 04/30/2021 "  + makeorder.orderTotal + " " + makeorder.userCCNum + "\n{\n";
+
+        for (CartItem item: Catalog.cartItemsArr) {
+            if (item.getQuantity() != 0) {
+                String[] sArray = item.getItemNameAndDescription().split(":", 2);
+                orderInfo += sArray[0] + " " + item.getItemPrice() + " " + item.getQuantity() + "\n";
+            }
+        }
+        orderInfo += "}\n";
+        try {
+            Files.write(Paths.get("orders.txt"), orderInfo.getBytes(), StandardOpenOption.APPEND);
+        }catch (IOException e) {
+            System.out.println("File not Found");
+        }
     }
 }
 
@@ -374,6 +359,10 @@ class bankprocess implements Runnable {
         String authNum = bankApprove(q.receive());
         System.out.println("Auth num generated: " + authNum);
         q.reply(authNum);
+        if (authNum.equals("-1")){
+            authNum = bankApprove(q.receive());
+            q.reply(authNum);
+        }
     }
     String bankApprove(String testCC) {
         int authNum = -1;
@@ -395,8 +384,6 @@ class bankprocess implements Runnable {
         return String.valueOf(authNum);
     }
 }
-
-
 
 class CartItem {
     private String itemNameAndDescription;
@@ -442,7 +429,7 @@ class CartFrame extends JFrame {
     int yCoord = 0;
 
     // calculate subtotal and display order information. Provide place order button
-    CartFrame(List<CartItem> array) {
+    CartFrame() {
         subtotal = 0; // new subtotal calculated each time cart is opened
         setTitle("Shopping Cart");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -455,7 +442,7 @@ class CartFrame extends JFrame {
         placeOrderButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e){
-               makeorder frame = new makeorder(subtotal, array);
+               makeorder frame = new makeorder(subtotal);
                frame.setBounds(0,0,450,450);
                frame.setVisible(true);
             }
@@ -464,7 +451,7 @@ class CartFrame extends JFrame {
         cartPanel.add(placeOrderButton);
 
         // for each item in the array, display in the cart and add prices to subtotal
-        for (CartItem item: array){
+        for (CartItem item: Catalog.cartItemsArr){
             if (item.getQuantity() > 0){
                 subtotal += item.getQuantity() * Double.parseDouble(item.getItemPrice());
                 JLabel cartItemLabel = new JLabel("$" + item.getItemPrice() + " x" + String.format("%,.0f", item.getQuantity()) + ": " + item.getItemNameAndDescription());
@@ -495,7 +482,7 @@ public class Catalog extends JFrame {
     int yCoord = 50;
 
     // Items chosen from catalog to populate cart
-    public List<CartItem> cartItemsArr;
+    public static List<CartItem> cartItemsArr;
 
     // Read the file and display information on the screen
     public void ReadFile() {
@@ -531,7 +518,7 @@ public class Catalog extends JFrame {
 
                 yCoord+=75;
 
-                System.out.println("TEST");
+                //System.out.println("TEST");
 
                 Scanner input = new Scanner(new File("DataStuff/LoginData.txt"));
                 //System.out.println("Test");
@@ -542,21 +529,21 @@ public class Catalog extends JFrame {
                     // find user premium status to use appropriate price
                 while( input.hasNextLine() ){ // find user in file
                     userInfo = input.nextLine();
-                    System.out.println("IN LOGIN READING " + userInfo);
+                    //System.out.println("IN LOGIN READING " + userInfo);
                     if (userInfo.contains(LoginScreen.usernameLogged)){
-                        System.out.println("TESTING USERNAME READ: " + LoginScreen.usernameLogged);
+                        //System.out.println("TESTING USERNAME READ: " + LoginScreen.usernameLogged);
                         break;
                     }
                 }
 
                 while( input.hasNextLine() ){ // find user premium status
-                    System.out.println("TEST");
+                    //System.out.println("TEST");
                     userInfo = input.nextLine();
                     if (userInfo.contains("Premium")) break;
                 }
                 if (userInfo.contains("true")) { // if premium, take premium price
                     userPrice = sArray[1];
-                    System.out.println("TEST3");
+                    //System.out.println("TEST3");
                 } else { // else, take regular price
                     userPrice = sArray[2];
                 }
@@ -591,7 +578,7 @@ public class Catalog extends JFrame {
         cartJButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                CartFrame cartFrame = new CartFrame(cartItemsArr);
+                CartFrame cartFrame = new CartFrame();
                 cartFrame.setSize(450,450);
                 cartFrame.setVisible(true);
             }
