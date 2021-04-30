@@ -235,11 +235,11 @@ class makeorder extends JFrame {
                 System.out.println(userCCNum);
                 MessageBufferResponse q = new MessageBufferResponse();
                 //String userCCNUm;
-                new orderprocess(q, userCCNum);
-                new bankprocess(q);
-                System.out.println("PRINTING: " + MessageBufferResponse.response);
-                if ( (MessageBufferResponse.response).equals("-1")){
-                    storeOrder(MessageBufferResponse.response, array);
+                orderprocess orderP = new orderprocess(q, userCCNum);
+                bankprocess bankP = new bankprocess(q);
+                System.out.println("PRINTING: " + orderP.q.response);
+                if ( !(orderP.q.response).equals("-1")){
+                    storeOrder(orderP.q.response, array);
                 }
             }
         });
@@ -283,8 +283,8 @@ class makeorder extends JFrame {
 
 // Threading classes
 class MessageBufferResponse {
-    static String response; // Authoriztion num
-    static String message; // CCNum
+    String response; // Authoriztion num
+    String message; // CCNum
 
     private boolean messageBufferFull = false;
     private boolean responseBufferFull = false;
@@ -305,7 +305,7 @@ class MessageBufferResponse {
         System.out.println("Response of this operation is : " + response);
         responseBufferFull = false;
         notify();
-        return (response);
+        return response;
     }
 
     // bankingSystem waits to get ccNum
@@ -358,6 +358,7 @@ class orderprocess implements Runnable {
             }
         }
         System.out.println("FINAL RESPONSE: " + q.response);
+        q.response = authorizationNum;
     }
 }
 
