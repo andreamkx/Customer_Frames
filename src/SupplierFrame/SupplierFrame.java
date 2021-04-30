@@ -98,6 +98,7 @@ public class SupplierFrame extends JFrame {
                 if (JOptionPane.showConfirmDialog(loggedIn, "You have Logged out, would you like to log in again?", "Login Systems", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_NO_OPTION) {
                     LoginScreen.main(null);
                     //Catalog.dispatchEvent(new WindowEvent(Catalog, WindowEvent.WINDOW_CLOSING));
+                    dispose();
                 } else {
                     System.exit(0);
                 }

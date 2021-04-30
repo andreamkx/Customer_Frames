@@ -1,13 +1,13 @@
 package CatalogWindow;
 
+import CatalogWindowCont.makeorder;
+import CatalogWindowCont.viewOrder;
+
 import java.awt.event.*;
 import java.awt.Window;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -72,8 +72,9 @@ class CartFrame extends JFrame {
         placeOrderButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e){
-                // place order
-
+               makeorder frame = new makeorder(subtotal);
+               frame.setBounds(150,100,530,400);
+               frame.setVisible(true);
             }
         });
         placeOrderButton.setBounds(xCoord, yCoord, 125, 25);
@@ -94,6 +95,7 @@ class CartFrame extends JFrame {
         subtotalLabel.setBounds(xCoord+150, 0,100,25);
         cartPanel.add(subtotalLabel);
     }
+
 }
 
 // Displays catalog to customer
@@ -147,7 +149,7 @@ public class Catalog extends JFrame {
                 yCoord+=75;
 
                 Scanner input = new Scanner(new File("DataStuff/LoginData.txt"));
-                System.out.println("Test");
+                //System.out.println("Test");
                 String userInfo = "";
                 String userPrice = "";
 
@@ -214,7 +216,8 @@ public class Catalog extends JFrame {
         viewOrderJButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("View Order pressed");
+                viewOrder frame = new viewOrder();
+                frame.
             }
         });
         viewOrderJButton.setBounds(xCoord+115, 0, 100, 25);
@@ -240,6 +243,7 @@ public class Catalog extends JFrame {
                 if (JOptionPane.showConfirmDialog(loggedIn, "You have Logged out, would you like to log in again?", "Login Systems", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_NO_OPTION) {
                     LoginScreen.main(null);
                     //Catalog.dispatchEvent(new WindowEvent(Catalog, WindowEvent.WINDOW_CLOSING));
+                    dispose();
                 } else {
                     System.exit(0);
                 }
