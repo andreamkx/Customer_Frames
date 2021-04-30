@@ -1,7 +1,7 @@
 package CatalogWindow;
 
 import CatalogWindowCont.makeorder;
-import CatalogWindowCont.viewOrder;
+// import CatalogWindowCont.viewOrder;
 
 import java.awt.event.*;
 import java.awt.Window;
@@ -14,7 +14,100 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+class viewInvoiceButton {
+    private JPanel viewOrdersPanel;
+    private JButton viewInvoiceB;
+    private String orderRead;
+
+    viewInvoiceButton(String order, JButton button, JPanel panel) {
+        this.orderRead = order;
+        this.viewInvoiceB = button;
+        this.viewOrdersPanel = panel;
+
+        viewInvoiceB.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Scanner ordersInput = null;
+                try {
+                    ordersInput = new Scanner(new File("orders.txt"));
+                } catch (FileNotFoundException fileNotFoundException) {
+                    fileNotFoundException.printStackTrace();
+                }
+
+                // get order date, items, total, payment info and show in dialog
+                String orderLine = null;
+                while (ordersInput.hasNextLine()){
+                    orderLine = ordersInput.nextLine();
+                    if (orderLine.equals(orderRead)){
+                        String[] arr = orderLine.split(" ", 6);
+
+                        // populate string with order info
+                        String orderInfo = "Date: " + arr[3] +
+                                "\nTotal: $" + arr[4] +
+                                "\nPayment Info: " + arr[5];
+                        orderLine = ordersInput.nextLine(); // toss {
+
+                        // populate string with ordered items
+                        while (orderLine != "}"){
+                            orderLine = ordersInput.nextLine();
+                            orderInfo += "\n" + orderLine;
+                        }
+
+                        JOptionPane.showMessageDialog(viewOrdersPanel, orderInfo);
+                        break;
+                    }
+                }
+            }
+        });
+    } // end viewInvoiceButton constructor
+}
+
 // Associates specific 'Add to Cart' actions with each item
+class viewOrder extends JFrame {
+    private JPanel mainPanel;
+    int xCoord = 5;
+    int yCoord = 10;
+
+
+    public viewOrder() {
+        setTitle("Your Orders");
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setBounds(0,0,450,450);
+        mainPanel = new JPanel();
+        mainPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        setContentPane(mainPanel);
+        mainPanel.setLayout(null);
+
+        File custFile = new File("orders.txt");
+        Scanner ordersInput = null;
+        try {
+            ordersInput = new Scanner(custFile);
+        } catch (FileNotFoundException fileNotFoundException) {
+            fileNotFoundException.printStackTrace();
+        }
+
+        String read = null;
+        while (ordersInput.hasNextLine()) {
+            read = ordersInput.nextLine();
+
+            if (read.contains(LoginScreen.username)){
+                String[] arr = read.split(" ", 4);
+                JLabel orderInfoLabel = new JLabel("Order #: " + arr[1] + "Order Status: " + arr[2]);
+                orderInfoLabel.setBounds(xCoord, yCoord, 200, 25);
+                mainPanel.add(orderInfoLabel);
+
+                JButton viewInvoiceB = new JButton("View Invoice");
+                viewInvoiceB.setBounds(xCoord + 450, yCoord, 125, 25);
+                mainPanel.add(viewInvoiceB);
+
+                viewInvoiceButton button = new viewInvoiceButton(read, viewInvoiceB, mainPanel);
+
+                yCoord += 75;
+            }
+        }
+
+    }
+}
 class CartItem {
     private String itemNameAndDescription;
     private String itemPrice;
@@ -124,8 +217,8 @@ public class Catalog extends JFrame {
 
             while (in.hasNextLine()) {
                 String s = in.nextLine();
+                System.out.println(s);
                 String[] sArray = s.split(",", 3);
-
                 JLabel itemJLabel = new JLabel(sArray[0]);
                 itemJLabel.setBounds(xCoord, yCoord, 375,25);
                 rootJPanel.add(itemJLabel);
@@ -148,6 +241,8 @@ public class Catalog extends JFrame {
 
                 yCoord+=75;
 
+                System.out.println("TEST");
+
                 Scanner input = new Scanner(new File("DataStuff/LoginData.txt"));
                 //System.out.println("Test");
                 String userInfo = "";
@@ -157,18 +252,21 @@ public class Catalog extends JFrame {
                     // find user premium status to use appropriate price
                 while( input.hasNextLine() ){ // find user in file
                     userInfo = input.nextLine();
+                    System.out.println("IN LOGIN READING " + userInfo);
                     if (userInfo.contains(LoginScreen.username)){
+                        System.out.println("TESTING USERNAME READ: " + LoginScreen.username);
                         break;
                     }
                 }
 
                 while( input.hasNextLine() ){ // find user premium status
+                    System.out.println("TEST");
                     userInfo = input.nextLine();
                     if (userInfo.contains("Premium")) break;
                 }
-
                 if (userInfo.contains("true")) { // if premium, take premium price
                     userPrice = sArray[1];
+                    System.out.println("TEST3");
                 } else { // else, take regular price
                     userPrice = sArray[2];
                 }
@@ -211,28 +309,18 @@ public class Catalog extends JFrame {
         cartJButton.setBounds(xCoord, 0, 100, 25);
         rootJPanel.add(cartJButton);
 
-        // View Order displays customer order
-        viewOrderJButton = new JButton("View Order");
+        // View Order displays customer order history
+        viewOrderJButton = new JButton("View Orders");
         viewOrderJButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 viewOrder frame = new viewOrder();
-                frame.
+                frame.setSize(400,400);
+                frame.setVisible(true);
             }
         });
         viewOrderJButton.setBounds(xCoord+115, 0, 100, 25);
         rootJPanel.add(viewOrderJButton);
-
-        // view Invoice displays customer Invoice
-        viewInvoiceJButton = new JButton("View Invoice");
-        viewInvoiceJButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("View Invoice pressed");
-            }
-        });
-        viewInvoiceJButton.setBounds(xCoord+230, 0, 125, 25);
-        rootJPanel.add(viewInvoiceJButton);
 
         // Logs user out of OSS
         logOutJButton = new JButton("Log Out");

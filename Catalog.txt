@@ -1,2 +1,3 @@
-Shirt1: Description of shirt1 elongating to test readability in catalog elongating,20,45
-Shirt2: Description of shirt2,31,40
+Short-Sleeve: Cotton fabric with breathability,25,15
+Long-Sleeve: Cotton fabric with V-Neck,40,30
+Hoodie: Cotton-Jersey with drawstrings,55,45

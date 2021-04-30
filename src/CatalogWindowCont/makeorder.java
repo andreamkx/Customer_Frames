@@ -1,8 +1,8 @@
 package CatalogWindowCont;
 
-import CatalogWindow.CartFrame;
+// import CatalogWindow.CartFrame;
 import CatalogWindow.LoginScreen;
-
+import java.util.Random;
 import javax.swing.*;
 import java.io.*;
 import java.io.File;
@@ -10,10 +10,11 @@ import java.util.Scanner;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-
 // make order frame
 public class makeorder extends JFrame {
+    private JLabel mailOrderLabel = new JLabel("Mail Order");
     private JTextField textField1;
+    private JLabel pickupLabel = new JLabel("Or select a pickup location");
     private JRadioButton location1RadioButton;
     private JRadioButton location2RadioButton;
     private JRadioButton location3RadioButton;
@@ -26,20 +27,39 @@ public class makeorder extends JFrame {
         mainPanel = new JPanel();
         orderTotal = subtotal;
 
+        mailOrderLabel.setBounds(10, 5, 125,25);
+        mainPanel.add(mailOrderLabel);
 
+        pickupLabel.setBounds(10,35,125,25);
+        mainPanel.add(pickupLabel);
+
+        location1RadioButton = new JRadioButton("Lubbock Downtown Post Office");
+        location1RadioButton.setBounds(10,75,200,25);
+
+        location2RadioButton = new JRadioButton("Lubbock Amazon Post Office");
+        location2RadioButton.setBounds(10, 115, 200, 25);
+
+        location3RadioButton = new JRadioButton("Texas Tech University Post Office");
+        location3RadioButton.setBounds(10, 155, 200, 25);
+
+
+        textField1 = new JTextField();
         textField1.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // String inputaddress = textField1.getText();
                 choosemail();
-
             }
         });
+        textField1.setBounds(10, 50, 300,25);
+        mainPanel.add(textField1);
 
+        submitButton = new JButton("Submit");
         submitButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Scanner input = null;
+
                 try {
                     input = new Scanner(new File("DataStuff/LoginData.txt"));
                 } catch (FileNotFoundException fileNotFoundException) {
@@ -47,7 +67,7 @@ public class makeorder extends JFrame {
                 }
                 System.out.println("Test");
                 String userInfo = "";
-                String userCCNum = "";
+                String userCCNum = null;
 
                 // find user premium status to use appropriate price
                 while( input.hasNextLine() ){ // find user in file
@@ -70,19 +90,22 @@ public class makeorder extends JFrame {
                 }
 
                 MessageBufferResponse q = new MessageBufferResponse();
-                String userCCNUm;
-                new orderprocess(q, userCCNUm);
+                //String userCCNUm;
+                new orderprocess(q, userCCNum);
                 new bankprocess(q);
             }
         });
+        submitButton.setBounds(400, 400, 125, 25 );
+        mainPanel.add(submitButton);
     } // end make order constructor
 
+    // if textfield not null, call this
     public void choosemail() {
-        int finalcost = 0 ;
-        finalcost += 3;
+        orderTotal += 3;
     }
 
     public void storeOrder() {
+        // use supplier as reference to store order info
         try {
             File orderFile = new File("C:\\Orders.txt");
             if (!orderFile.exists()) {
@@ -104,8 +127,7 @@ public class makeorder extends JFrame {
             JOptionPane.showMessageDialog(mainPanel, "Your total is now $" +  orderTotal);
         }
         else {
-            // change premium status to false ** ask will
-            
+            System.out.println("Changing premium Status");
         }
     }
 
@@ -119,6 +141,7 @@ class MessageBufferResponse {
     private boolean messageBufferFull = false;
     private boolean responseBufferFull = false;
 
+    // customer calls this to send ccnum, then returns authnum
     synchronized String send(String creditCardNum) {
         this.message = creditCardNum;
         messageBufferFull = true;
@@ -126,7 +149,7 @@ class MessageBufferResponse {
 
         while (!responseBufferFull)
             try {
-                wait();
+                wait(); // starts banking system thread
             } catch (InterruptedException e) {
                 System.out.println("InterruptedException caught");
             }
@@ -137,16 +160,16 @@ class MessageBufferResponse {
         return (response);
     }
 
+    // bankingSystem waits to get ccNum
     synchronized String receive() {
         while (!messageBufferFull) {
             try {
-                wait();
+                wait(); // wait until ccnum is sent to buffer
             } catch (InterruptedException e) {
                 System.out.println("InterruptedException caught");
-                messageBufferFull = false;
             }
         }
-        notify();
+        messageBufferFull = false;
         return (message);
     }
 
@@ -164,22 +187,24 @@ class orderprocess implements Runnable {
 
     public orderprocess(MessageBufferResponse q, String userCCNum) {
         this.q = q;
-        new Thread(this, "Customer").start();
         this.CCNum = userCCNum;
+        new Thread(this, "Customer").start();
     }
 
     @Override
     public void run() {
         Scanner in = new Scanner(System.in);
-
         String authorizationNum = q.send(CCNum);
-        if (authorizationNum.equals("-1")){
-            System.out.println("Enter a new credit card number:");
-            String newCreditCardNum = in.nextLine();
+        if (authorizationNum.equals("-1")) {
+
+//          **DOUBLE CHECK
+            String newCreditCardNum = JOptionPane.showInputDialog("Enter a new credit card number: ");
+            //int newCCNum = Integer.parseInt((newCreditCardNum));
             String newauthorizationNum = q.send(newCreditCardNum);
         }
-        if (!authorizationNum.equals("-1")){
-            //account.creditCardNum = newCreditCardNum;
+        if (authorizationNum.equals("-1")){
+            //account.creditCardNum = newCreditCardNum; ** ask will
+            System.out.println("new creditcard num given");
         }
         else {
             System.out.println("too many invalid attempts.");
@@ -187,18 +212,36 @@ class orderprocess implements Runnable {
     }
 }
 
-
 class bankprocess implements Runnable {
-
     MessageBufferResponse q;
     public bankprocess(MessageBufferResponse q) {
         this.q = q;
         new Thread(this, "Supplier").start();
     }
-
     @Override
     public void run() {
+        String authNum = bankApprove(q.receive());
+        q.reply(authNum);
+    }
 
+    String bankApprove(String testCC) {
+        int authNum = -1;
+        Scanner input = null;
+        try {
+            input = new Scanner(new File("bankSystem.txt"));
+        } catch (FileNotFoundException fileNotFoundException) {
+            fileNotFoundException.printStackTrace();
+        }
+
+        while (input.hasNextLine()){
+            if (input.nextLine() == testCC){
+                Random rand = new Random();
+                authNum = rand.nextInt(10000);
+                // charge customer bank account
+                ;
+            }
+                    }
+        return String.valueOf(authNum);
     }
 }
 

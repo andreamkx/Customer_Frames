@@ -93,10 +93,11 @@ public class SupplierScreen extends JFrame {
 				char[] charPassword = passwordPF.getPassword();
 				String passwordin = String.valueOf(charPassword);
 				String usernamein = usernameTF.getText();
-				
+
 				try {
 					FileReader fr = new FileReader(inputFile);
 					RandomAccessFile raf = new RandomAccessFile(inputFile, "rw");
+					int count = 0;
 					for(int j = 0; j < line; j+=4){
 						System.out.println("count " + j);
 						String username = raf.readLine().substring(9);
@@ -104,26 +105,20 @@ public class SupplierScreen extends JFrame {
 						System.out.println(username);
 						System.out.println(password);
 						if(usernamein.equals(username) && passwordin.equals(password)){
-							JOptionPane.showMessageDialog(null, "Login Successful", "Success", JOptionPane.INFORMATION_MESSAGE);
-							SupplierFrame.main(null);
-							dispose();
+							count = 1;
 							break;
-//							JFrame loggedIn = new JFrame("Logged In Screen");
-//							if (JOptionPane.showConfirmDialog(loggedIn, "You have Logged out, would you like to log in again?", "Login Systems", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_NO_OPTION) {
-//								usernameTF.setText("");
-//								passwordPF.setText("");
-//							}
-//							else {
-//								System.exit(0);
-//							}
-
-						}
-						else{
-							JOptionPane.showMessageDialog(null, "Invalid Username / Password Combo", "Error", JOptionPane.ERROR_MESSAGE);
 						}
 						for(int k = 1;k <= 3; k++){
-		                    raf.readLine();
-		                }
+							raf.readLine();
+						}
+					}
+					if(count == 1) {
+						JOptionPane.showMessageDialog(null, "Login Successful", "Success", JOptionPane.INFORMATION_MESSAGE);
+						SupplierFrame.main(null);
+						dispose();
+					}
+					else {
+						JOptionPane.showMessageDialog(null, "Invalid Username / Password Combo", "Error", JOptionPane.ERROR_MESSAGE);
 					}
 					fr.close();
 					raf.close();
